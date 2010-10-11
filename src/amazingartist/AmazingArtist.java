@@ -16,11 +16,13 @@
 
 package amazingartist;
 
+import java.awt.AlphaComposite;
 import java.awt.BasicStroke;
 import java.awt.BorderLayout;
 import java.awt.Canvas;
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Composite;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -60,6 +62,11 @@ class JImagePanel extends JPanel {
 		this.y = y;
 	}
 
+	private AlphaComposite makeComposite(float alpha) {
+		int type = AlphaComposite.SRC_OVER;
+		return (AlphaComposite.getInstance(type, alpha));
+	}
+
 	protected void drawGrid(Graphics g) {
 		super.paintComponents(g);
 		Graphics2D g2 = (Graphics2D) g;
@@ -84,6 +91,9 @@ class JImagePanel extends JPanel {
 		}
 		
 		// Drawing the mask
+		Composite original = g2.getComposite();
+		g2.setComposite(makeComposite(trans * 0.01f));
+		
 		for(int i = 0; size * i < w; i++){
 			for(int j = 0; size * j < h; j++){
 				double sx = size * i;
@@ -93,8 +103,12 @@ class JImagePanel extends JPanel {
 				
 				Rectangle2D rect = new Rectangle2D.Double(sx, sy, size, size);
 				
+				g2.setPaint(Color.BLACK);
+				g2.fill(rect);		
 			}
 		}
+		
+		g2.setComposite(original);
 		
 	}
 
